@@ -19,7 +19,6 @@ const StatisticsLine = ({ value, text, simbol }) => {
   );
 };
 
-
 const Statistics = ({good, neutral, bad }) => {
   
   const all = good + neutral + bad;
@@ -43,11 +42,6 @@ const Statistics = ({good, neutral, bad }) => {
     </>
   );
 };
-
-
-
-
-
 
 
 const App = () => {
