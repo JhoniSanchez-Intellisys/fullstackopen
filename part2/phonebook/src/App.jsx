@@ -4,31 +4,49 @@ import Personform from "./components/Personform";
 import Person from "./components/Person";
 import services from "./assets/services";
 
-
-
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newFind, setNewFind] = useState([]);
   const [search, newSeach] = useState("");
+  const res = async () => {
+    try {
+      const data = await services.getAll();
+      console.log(data);
+      setPersons(data);
+      return data;
+    } catch (error) {
+      console.log(error);
 
-const res = async () => {
-  const data = await services.getAll()
-  return data
-}
+      setPersons([]);
+    }
+  };
 
-useEffect(() => {
-const resp = res()
-console.log('Funcion =>', resp)
-setPersons(resp)
-}, [])
+  useEffect(() => {
+    res();
+    console.log(persons);
+  }, []);
 
+  const del = async (id, name) => {
+    try {
+      console.log(id);
+      if (window.confirm(`Do you really want to Delete: ${name}?`)) {
+        const data = await services.del(id);
+        const newData = persons.filter((el) => el.id != id);
+        setPersons(newData);
+        console.log(data);
+        return data;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const searching = (e) => {
     newSeach(e.target.value);
-    console.log('search', search);
-    
+    console.log("search", search);
+
     const valueExist = persons.filter((el) => {
       return el.name.toLowerCase() == search.toLowerCase();
     });
@@ -39,34 +57,60 @@ setPersons(resp)
 
   console.log("Cuadro de Busqueda", search);
 
-  const addperson = (e) => {
+  const update = (id, valueExist) => {
+    try {
+      services.update(id, valueExist);      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addperson = async (e) => {
     e.preventDefault();
     const newPerson = {
       name: newName,
       number: newNumber,
-      id: persons.length,
+      id: persons.length.toString(),
     };
-
-    const valueExist = persons.filter((el) => {
-      return el.name == newName;
-    });
+    const valueExist = persons.find((el) => el.name == newName);
     console.log(valueExist);
-
-    if (valueExist[0] && valueExist[0].name == newName) {
-      alert(`${newName} is already added to phonebook`);
-    } else {
-      setPersons([...persons, newPerson]);
+    try {
+      if (valueExist && valueExist.name == newName) {
+        if (
+          confirm(`${newName} is already added to phonebook, replace the old number with a new one`)
+        ) {
+          valueExist.number = newNumber;
+          setPersons([...persons, valueExist]);
+          update(valueExist.id, valueExist);
+          
+        } else if (!valueExist) {
+      
+        } else {
+          return;
+        }
+      } else {
+            const data = await services.create(newPerson);
+          const newData = persons.concat(data);
+          setPersons(newData);
+          console.log(data);
+          console.log(persons);
+          setPersons([...persons, newPerson]);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
- const filteredData = search ? persons.filter((person) => person.name.toLowerCase().includes(search.toLowerCase())) : persons
+  const filteredData = search
+    ? persons.filter((person) =>
+        person.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : persons;
 
   return (
     <div>
       <h1>Phonebook</h1>
-      <Filter
-       searching={searching} 
-       search={search}  />
+      <Filter searching={searching} search={search} />
 
       <h2>Add New</h2>
       <Personform
@@ -77,7 +121,7 @@ setPersons(resp)
         newName={newName}
       />
       <h2>Numbers</h2>
-      <Person persons={filteredData} />
+      <Person persons={filteredData} dele={del} />
     </div>
   );
 };
