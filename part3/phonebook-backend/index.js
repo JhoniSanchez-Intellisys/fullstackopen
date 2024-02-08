@@ -1,29 +1,59 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const app = express();
 const cors = require("cors");
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 3001;
+const mongoose = require("mongoose");
+
+const Note = require("./Schema.js");
+
 app.use(express.json());
-app.use(express.static('dist'))
+app.use(express.static("dist"));
 app.use(cors());
+// mongoose.set('strictQuery', false)
 
 morgan.token("body", function (req, res) {
   return JSON.stringify(req.body);
 });
 app.use(morgan(":url :method :body"));
 
-// app.use(morgan(':method :url :status :response-time ms - :req[content-type]'));
-// app.use('/api/persons', morgan(':req :res'));
-// app.use(morgan(':req'));
+// mongoose.connect(url)
+// const noteSchema = new mongoose.Schema({
+//   content: String,
+//   important: Boolean,
+// })
 
-// const requestLogger = (request, response, next) => {
-//   console.log('Method:', request.method)
-//   console.log('Path:  ', request.path)
-//   console.log('Body:  ', request.body)
-//   console.log('---')
-//   next()
-// }
-// app.use(requestLogger)
+// noteSchema.set('toJSON', {
+//   transform: (document, returnedObject) => {
+//     returnedObject.id = returnedObject._id.toString()
+//     delete returnedObject._id
+//     delete returnedObject.__v
+//   }
+// })
+
+// const Note = mongoose.model('Note', noteSchema)
+
+const note = new Note({
+  content: "HTML is Easy",
+  important: true,
+});
+
+// note.save().then(result => {
+//   console.log('note saved!')
+//   mongoose.connection.close()
+// })
+
+// Note.find({ important: true }).then(result => {
+//   // ...
+// })
+
+// Note.find({}).then(result => {
+//   result.forEach(note => {
+//     console.log(note)
+//   })
+//   // mongoose.connection.close()
+// })
 
 let persons = [
   {
@@ -60,36 +90,70 @@ app.get("/info", (request, response) => {
   <p> ${data}</p>`);
 });
 
-app.get("/api/persons", (request, response) => {
-  response.json(persons);
-  //   response.end(notes)
-  // response.end(JSON.stringify(notes))
-});
+// app.get("/api/persons", (request, response) => {
+//   Note.find({}).then((result) => {
+//     result.forEach((note) => {
+//       console.log(note);
+//            response.json(note);
 
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
+//     });
+//     // mongoose.connection.close();
+//   });
+ 
+// });
 
-  const person = persons.filter((el) => {
-    return el.id == id;
-  });
+app.get('/api/persons', (request, response) => {
+  Note.find({}).then(notes => {
+    response.json(notes)
+     console.log(note);
+  }).catch(error => {
+    console.log(error)
+    response.status(500).end()
+  })
+})
 
-  if (person.length == 0) {
-    response.status(404).end();
-  }
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
-});
+// app.get("/api/persons/:id", (request, response) => {
+//   const id = Number(request.params.id);
+
+//   const person = persons.filter((el) => {
+//     return el.id == id;
+//   });
+
+//   if (person.length == 0) {
+//     response.status(404).end();
+//   }
+//   if (person) {
+//     response.json(person);
+//   } else {
+//     response.status(404).end();
+//   }
+// });
+
+
+app.get('/api/persons/:id', (request, response, next) => {
+  Note.findById(request.params.id)
+    .then(note => {
+
+      if (note) {
+        response.json(note)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(
+      error => next(error)
+      
+      // error => {
+      // console.log(error)
+      // response.status(400).send({ error: 'malformatted id' })}
+    )
+})
+
+
+
 
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
-  // const persond = persons.find((el)=>{
-  //   return el.id === id;
-  // })
-  // const indice = persons.indexOf(persond)
-
   const person = persons.filter((el) => {
     return el.id !== id;
   });
@@ -101,7 +165,7 @@ app.delete("/api/persons/:id", (request, response) => {
 
 app.post("/api/persons", (request, response) => {
   const body = request.body;
-  // console.log(body)
+
   if (!body.name) {
     return response.status(400).json({
       error: "Name missing",
@@ -123,29 +187,30 @@ app.post("/api/persons", (request, response) => {
     });
   }
   const maxId = persons.length > 0 ? Math.max(...persons.map((n) => n.id)) : 0;
+  // noteSchema
+  const note = new Note({
+    id: maxId + 1,
+    name: request.body.name,
+    number: request.body.number,
+  });
 
-  const note = request.body;
-  note.id = maxId + 1;
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  }).catch(error => {
+    console.log(error)
+    response.status(500).end()
+  });
 
-  persons = persons.concat(note);
+  // mongoose.connection.close();
 
-  response.json(note);
+  // const note = request.body;
+  // note.id = maxId + 1;
+
+  // persons = persons.concat(note);
+
+  // response.json(note);
 });
 
-// app.get('/api/notes/:id', (request, response) => {
-//     const id = request.params.id
-//     const note = notes.find(note => note.id == id)
-//     response.json(note)
-//   })
-
-// const unknownEndpoint = (request, response) => {
-//   response.status(404).send({ error: 'unknown endpoint' })
-// }
-
-// app.use(unknownEndpoint)
-
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-
-})
+  console.log(`Server running on port ${PORT}`);
+});
