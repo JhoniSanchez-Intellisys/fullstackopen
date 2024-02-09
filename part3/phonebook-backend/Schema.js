@@ -16,9 +16,22 @@ mongoose
   });
 
 const noteSchema = new mongoose.Schema({
-  id: Number,
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    require: true,
+  },
+  number: {
+    type: String,
+    minLength: 9,
+    validate: {
+      validator: function(v) {
+        return /^\d{2,3}-\d+$/.test(v);
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    },
+    require: true,
+  },
 });
 
 noteSchema.set("toJSON", {
@@ -30,3 +43,6 @@ noteSchema.set("toJSON", {
 });
 
 module.exports = mongoose.model("Note", noteSchema);
+
+
+

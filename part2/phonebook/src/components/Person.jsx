@@ -10,7 +10,7 @@ export default function Person({ persons, dele }) {
         return (
           <li key={el.id}>
             {el.name}: {el.number} 
-           <button id={el.id} datatitle={el.name} onClick={() => dele(el.id, el.name)}>Delete{el.id}</button>
+           <button id={el.id} datatitle={el.name} onClick={() => dele(el.id, el.name)}>Delete</button>
           </li>
         );
       })}
