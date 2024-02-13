@@ -22,10 +22,11 @@ app.use(morgan(":url :method :body"));
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 response.send(error.message)
-  if (error.name === "CastError") {
+  // next(error);
+
+  // if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
-  }
-  next(error);
+  // }
 };
 
 // this has to be the last loaded middleware.
