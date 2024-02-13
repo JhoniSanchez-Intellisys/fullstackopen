@@ -43,10 +43,11 @@ const App = () => {
       if (window.confirm(`Do you really want to Delete: ${name}?`)) {
         const data = await services.del(id);
         const newData = persons.filter((el) => el.id != id);
+        const oldData = persons.filter((el) => el.id = id);
         setPersons(newData);
-        console.log(data);
+        console.log(oldData);
 
-        setmessage(`Delete ${data.data.name}`);
+        setmessage(`Delete ${oldData[0].name}`);
 
         return data.data;
       }
@@ -109,13 +110,17 @@ const App = () => {
         }
       } else {
         const data = await services.create(newPerson);
-
-        const newData = persons.concat(data.data);
-        setPersons(newData);
-        setmessage(`Added  ${data.data.name}`);
-        // settype("e")
-        console.log(data);
-        console.log(persons);
+        if (!data.data.name) {
+          setmessage(`Added  ${data.data}`);
+          settype("e");
+        } else {
+          const newData = persons.concat(data.data);
+          setPersons(newData);
+          setmessage(`Added  ${data.data.name}`);
+          // settype("e")
+          console.log(data);
+          console.log(persons);
+        }
       }
     } catch (error) {
       console.log(error);

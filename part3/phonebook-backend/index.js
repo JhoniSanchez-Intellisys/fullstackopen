@@ -271,6 +271,7 @@ app.post("/api/persons", (request, response, next) => {
   // response.json(note);
 });
 app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
