@@ -1,8 +1,9 @@
 module.exports = {
     "env": {
-        "browser": true,
         "commonjs": true,
-        "es2021": true
+        "es2021": true,
+
+        "node": true
     },
     "overrides": [
         {
@@ -25,14 +26,32 @@ module.exports = {
     ],
     'extends': 'eslint:recommended',
     'rules': {
-        // ...
-        'eqeqeq': 'error',
-        'no-trailing-spaces': 'error',
-        'object-curly-spacing': [
-            'error', 'always'
+        '@stylistic/js/indent': [
+            'error',
+            2
         ],
-        'arrow-spacing': [
-            'error', { 'before': true, 'after': true }
-        ]
-      },
+   
+        '@stylistic/js/linebreak-style': [
+            'error',
+            'windows'
+        ],
+        '@stylistic/js/quotes': [
+            'error',
+            'single'
+        ],
+        '@stylistic/js/semi': [
+            'error',
+            'never'
+        ],
+        'eqeqeq': 'error',
+    'no-trailing-spaces': 'error',
+    'object-curly-spacing': [
+        'error', 'always'
+    ],
+    'arrow-spacing': [
+        'error', { 'before': true, 'after': true }
+    ],
+    'no-console': 0
+  },
 }
+    
