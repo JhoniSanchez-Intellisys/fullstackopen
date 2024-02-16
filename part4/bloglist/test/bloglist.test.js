@@ -107,6 +107,7 @@ test("a note can be deleted", async () => {
   assert.strictEqual(notesAtEnd.length, helper.initialNotes.length - 1);
 });
 
+
 //rev ese cod. si es necesario
 beforeEach(async () => {
   await Blog.deleteMany({});
