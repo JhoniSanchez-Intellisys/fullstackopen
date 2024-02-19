@@ -23,6 +23,17 @@ blogRouter.get("/api/blog/:id", async (request, response, next) => {
   
 });
 
+blogRouter.delete("/api/blog/:id", async (request, response, next) => {
+  try {
+    const blogs = await Blog.findByIdAndDelete(request.params.id);
+  response.json(blogs);
+  } catch (error) {
+        next(error);
+
+  }
+  
+});
+
 // blogRouter.get("/api/blog", (request, response) => {
 //   Blog.find({})
 //     .then((notes) => {
@@ -56,5 +67,34 @@ blogRouter.post("/api/blog", async (request, response, next) => {
     next(error);
   }
 });
+
+
+
+blogRouter.put("/api/blog/:id", (request, response, next) => {
+  const { title, author, url, likes } = request.body;
+
+  if (!title || !author || !url || !likes) {
+    return response.status(400).json({
+      error: "Params missing",
+    });
+  }
+  const blog = new Blog({
+    title: title,
+    author: author,
+    url: url,
+    likes: likes,
+  });
+  Blog.findByIdAndUpdate(request.params.id, {$set:blog}, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
+    .then((el) => {
+      response.json(el);
+    })
+    .catch((error) => next(error));
+});
+
+
 
 module.exports = blogRouter;
