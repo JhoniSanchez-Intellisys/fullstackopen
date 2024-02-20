@@ -1,6 +1,9 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/modelblog");
 
+const User = require("../models/modelsUsers");
+
+
 blogRouter.get("/api/blog", async (request, response) => {
   try {
     const blogs = await Blog.find({});
@@ -28,6 +31,7 @@ blogRouter.delete("/api/blog/:id", async (request, response, next) => {
   }
 });
 
+
 // blogRouter.get("/api/blog", (request, response) => {
 //   Blog.find({})
 //     .then((notes) => {
@@ -41,21 +45,34 @@ blogRouter.delete("/api/blog/:id", async (request, response, next) => {
 // });
 
 blogRouter.post("/api/blog", async (request, response, next) => {
-  const { title, author, url, likes } = request.body;
+  const { title, author, url, likes, userId } = request.body;
 
   if (!title || !author || !url || !likes) {
     return response.status(400).json({
       error: "Params missing",
     });
   }
-  const blog = new Blog({
+
+  try { 
+
+    const user = await User.findById(userId)
+
+    const blog = new Blog({
     title: title,
     author: author,
     url: url,
     likes: likes,
+    
   });
-  try {
+
+   
+    // const user = await User.findById(userId)
+
     const blogSaved = await blog.save();
+
+    user.blogs = user.blogs.concat(blogSaved.id)
+    await user.save()
+
     response.status(201).json(blogSaved);
   } catch (error) {
     next(error);
