@@ -93,9 +93,9 @@ describe("More Blog Test", () => {
     };
 
     await api.put(`/api/blog/${id}`).send(UpBlog).expect(200);
-
-    const resultNote = await api.get(`/api/blog/${id}`).expect(200);
-    assert(resultNote.likes, UpBlog.likes);
+    const notesAtStart2 = await helper.blogInDB();
+    const upblog = notesAtStart2.filter((el) => el.id == id);
+    assert.deepEqual(upblog[0].likes, UpBlog.likes);
   });
 
   test("a valid note can be added ", async () => {

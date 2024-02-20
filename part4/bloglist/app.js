@@ -20,9 +20,9 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
+app.use(middleware.requestLogger)
 app.use("/", blogreutes)
 app.use(middleware.errorHandler);
-app.use(middleware.requestLogger)
 app.use(middleware.unknownEndpoint);
 
 // const blog = new Blog({
