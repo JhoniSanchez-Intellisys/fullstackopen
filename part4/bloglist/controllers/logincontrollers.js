@@ -4,6 +4,9 @@ const loginRouter = require('express').Router()
 const User = require('../models/modelsUsers')
 const config = require("../utils/config")
 
+
+
+
 loginRouter.post('/', async (request, response) => {
   const { username, password } = request.body
 
@@ -31,3 +34,6 @@ loginRouter.post('/', async (request, response) => {
 })
 
 module.exports = loginRouter
+
+
+

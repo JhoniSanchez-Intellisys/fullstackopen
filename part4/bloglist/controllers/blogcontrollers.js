@@ -2,6 +2,8 @@ const blogRouter = require("express").Router();
 const Blog = require("../models/modelblog");
 
 const User = require("../models/modelsUsers");
+const jwt = require("jsonwebtoken");
+const config = require("../utils/config")
 
 blogRouter.get("/api/blog", async (request, response) => {
   try {
@@ -42,27 +44,45 @@ blogRouter.delete("/api/blog/:id", async (request, response, next) => {
 //     });
 // });
 
+const getTokenFrom = (request) => {
+  const authorization = request.get("authorization");
+  if (authorization && authorization.startsWith("Bearer ")) {
+    return authorization.replace("Bearer ", "");
+  }
+  return null;
+};
+
 blogRouter.post("/api/blog", async (request, response, next) => {
-  const { title, author, url, likes, userId } = request.body;
+  const { title, author, url, likes,
+    //  userId
+     } = request.body;
   if (!title || !author || !url || !likes) {
     return response.status(400).json({
       error: "Params missing",
     });
   }
+
+  const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: "token invalid" });
+  }
+  const user = await User.findById(decodedToken.id);
+
   try {
-    const user = await User.findById(userId);
-    console.log("usuario buscado", user)
+    // const user = await User.findById(userId);
+    // console.log("usuario buscado", user);
     const blog = new Blog({
       title: title,
       author: author,
       url: url,
       likes: likes,
-      userId
+      userId: user.id,
     });
+
 
     // const user = await User.findById(userId)
     const blogSaved = await blog.save();
-    console.log(blogSaved.id)
+    // console.log(blogSaved.id);
     user.blogs = user.blogs.concat(blogSaved.id);
     await user.save();
     response.status(201).json(blogSaved);
@@ -70,7 +90,6 @@ blogRouter.post("/api/blog", async (request, response, next) => {
     next(error);
   }
 });
-
 blogRouter.put("/api/blog/:id", async (request, response, next) => {
   const { title, author, url, likes } = request.body;
 
@@ -79,6 +98,7 @@ blogRouter.put("/api/blog/:id", async (request, response, next) => {
       error: "Params missing",
     });
   }
+
   const blog = {
     title: title,
     author: author,
