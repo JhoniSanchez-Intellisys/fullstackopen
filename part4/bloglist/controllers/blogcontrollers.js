@@ -17,6 +17,10 @@ blogRouter.get("/api/blog", async (request, response) => {
 blogRouter.get("/api/blog/:id", async (request, response, next) => {
   try {
     const blogs = await Blog.findById(request.params.id);
+    const usuario = await User.findById(blogs.userId);
+    const  nombre = await JSON.stringify(usuario.username)
+    console.log(blogs)
+ blogs.userId = nombre
     response.json(blogs);
   } catch (error) {
     next(error);
