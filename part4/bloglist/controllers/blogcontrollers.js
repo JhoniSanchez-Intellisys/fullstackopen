@@ -3,11 +3,12 @@ const Blog = require("../models/modelblog");
 
 const User = require("../models/modelsUsers");
 const jwt = require("jsonwebtoken");
-const config = require("../utils/config")
+const config = require("../utils/config");
 
 blogRouter.get("/api/blog", async (request, response) => {
   try {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({})
+    
     response.json(blogs);
   } catch (error) {
     next(error);
@@ -18,10 +19,13 @@ blogRouter.get("/api/blog/:id", async (request, response, next) => {
   try {
     const blogs = await Blog.findById(request.params.id);
     const usuario = await User.findById(blogs.userId);
-    const  nombre = await JSON.stringify(usuario.username)
-    console.log(blogs)
- blogs.userId = nombre
+    const nombre = usuario.username;
+blogs.User = nombre
+
+    console.log(blogs, nombre)
+
     response.json(blogs);
+    
   } catch (error) {
     next(error);
   }
@@ -57,9 +61,13 @@ const getTokenFrom = (request) => {
 };
 
 blogRouter.post("/api/blog", async (request, response, next) => {
-  const { title, author, url, likes,
+  const {
+    title,
+    author,
+    url,
+    likes,
     //  userId
-     } = request.body;
+  } = request.body;
   if (!title || !author || !url || !likes) {
     return response.status(400).json({
       error: "Params missing",
@@ -82,7 +90,6 @@ blogRouter.post("/api/blog", async (request, response, next) => {
       likes: likes,
       userId: user.id,
     });
-
 
     // const user = await User.findById(userId)
     const blogSaved = await blog.save();
