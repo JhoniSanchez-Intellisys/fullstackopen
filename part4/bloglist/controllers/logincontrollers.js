@@ -6,7 +6,6 @@ const config = require("../utils/config")
 
 
 
-
 loginRouter.post('/', async (request, response) => {
   const { username, password } = request.body
 
@@ -23,7 +22,7 @@ loginRouter.post('/', async (request, response) => {
 
   const userForToken = {
     username: user.username,
-    id: user._id,
+    id: user.id,
   }
 
 //   const token = jwt.sign(userForToken, config.SECRET)
@@ -36,7 +35,7 @@ loginRouter.post('/', async (request, response) => {
 
   response
     .status(200)
-    .send({ token, username: user.username, name: user.name })
+    .send({ token, username: user.username, name: user.name, userId: user.id })
 })
 
 module.exports = loginRouter

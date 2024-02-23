@@ -1,7 +1,7 @@
 const Blog = ({ blog }) => (
   <div>
     
-    {blog.title} {blog.author}
+    <h3 style={{"display": "inline"}}>{blog.title}</h3> - -{blog.author}-{blog.User}-{blog.url}-{blog.userId}
   </div>  
 )
 
