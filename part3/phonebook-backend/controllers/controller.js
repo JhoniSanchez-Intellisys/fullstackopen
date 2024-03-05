@@ -155,12 +155,27 @@ const Note = require('../models/persons')
   //   response.status(200).json(person);
   // });
   
+  // personsRouter.delete("/api/persons/:id", (request, response, next) => {
+  //   Note.findByIdAndDelete(request.params.id)
+  //     .then((result) => {
+  //       response.status(204).end();
+  //     })
+  //     .catch((error) => next(error));
+  // });
+
   personsRouter.delete("/api/persons/:id", (request, response, next) => {
     Note.findByIdAndDelete(request.params.id)
       .then((result) => {
+        if (!result) {
+          return response.status(404).send({ error: "No se encontró el ID" });
+        }
         response.status(204).end();
+  
       })
-      .catch((error) => next(error));
+      .catch((error) => {
+        next(error)
+      }
+      );
   });
   
   personsRouter.put("/api/persons/:id", (request, response, next) => {

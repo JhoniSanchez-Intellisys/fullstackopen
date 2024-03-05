@@ -42,8 +42,8 @@ const App = () => {
       console.log(id);
       if (window.confirm(`Do you really want to Delete: ${name}?`)) {
         const data = await services.del(id);
-        const newData = persons.filter((el) => el.id != id);
-        const oldData = persons.filter((el) => el.id = id);
+        const newData = persons.filter((el) => el.id !== id);
+        const oldData = persons.filter((el) => el.id === id);
         setPersons(newData);
         console.log(oldData);
 
@@ -55,7 +55,7 @@ const App = () => {
       if (error.response.status > 399 || error.response.status < 500) {
         console.log(error);
         settype("e");
-        setmessage("Infomration do not exist in the server");
+        setmessage(error.response.data.error);
       }
     }
   };
@@ -125,7 +125,8 @@ const App = () => {
     } catch (error) {
       console.log(error);
       settype("e");
-      setmessage(error.message);
+      // setmessage(error.message);
+      setmessage(error.response.data.error)
     }
   };
 

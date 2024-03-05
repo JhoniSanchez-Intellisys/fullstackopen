@@ -74,6 +74,16 @@ function App() {
     );
     console.log(weat);
     setweathere(weat);
+    // setcountriesf([el]);
+    console.log(search);
+  };
+  const find3 = async (el) => {
+    const weat = await weather(
+      el.capitalInfo.latlng[0],
+      el.capitalInfo.latlng[1]
+    );
+    console.log(weat);
+    setweathere(weat);
     setcountriesf([el]);
     console.log(search);
   };
@@ -139,7 +149,7 @@ function App() {
                     "Too many matches, specify another filter" && (
                     <button
                       onClick={() => {
-                        find2(el);
+                        find3(el);
                       }}
                     >
                       Show More

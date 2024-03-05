@@ -7,6 +7,10 @@ const app = require("../app");
 const Blog = require("../models/modelblog.js");
 const api = supertest(app);
 
+
+
+
+
 // const initialBlog = [
 //   {
 //     title: "Casa",
@@ -43,6 +47,9 @@ beforeEach(async () => {
 });
 
 describe("When is initialiced, mor some blogs", () => {
+
+ 
+
   test("Los blogs han retornado como JSON", async () => {
     await api
       .get("/api/blog")

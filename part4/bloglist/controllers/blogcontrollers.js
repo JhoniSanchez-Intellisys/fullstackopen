@@ -34,6 +34,11 @@ blogs.User = nombre
 blogRouter.delete("/api/blog/:id", async (request, response, next) => {
   try {
     const blogs = await Blog.findByIdAndDelete(request.params.id);
+
+    console.log("este es blog", blogs)
+    if(blogs == null){
+        return response.status(404).json({ message: "Blog not found" });
+      }
     response.json(blogs);
   } catch (error) {
     next(error);
@@ -68,12 +73,12 @@ blogRouter.post("/api/blog", async (request, response, next) => {
     likes,
     //  userId
   } = request.body;
-  if (!title || !author || !url || !likes) {
+  if (!title || !author || !url ) {
     return response.status(400).json({
       error: "Params missing",
     });
   }
-
+  
   const decodedToken = jwt.verify(getTokenFrom(request), config.SECRET);
   if (!decodedToken.id) {
     return response.status(401).json({ error: "token invalid" });
