@@ -26,9 +26,13 @@ const login = async credentials => {
   return response.data
 }
 const update = (id, newObject) => {
-  const request = axios.put(`${ baseUrl }/${id}`, newObject)
+  const request = axios.put(`${ baseUrl }${id}`, newObject)
   return request.then(response => response.data)
 }
 
+const dele = (id) => {
+  const request = axios.delete(`${ baseUrl }${id}` )
+  return request.then(response => response.data)
+}
 
-export default { getAll, login, update, create, setToken }
+export default { getAll, login, update, create, setToken, dele }

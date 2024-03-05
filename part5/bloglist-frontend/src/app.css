@@ -1,0 +1,17 @@
+.notification {
+    color: rgb(53, 53, 53);
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .blog {
+    border: 2px solid rgba(138, 138, 138, 0.774);
+    margin: 0.3rem;
+    border-radius: 0.5rem;
+    padding: 0.3rem;
+    /* color: red; */
+  }
