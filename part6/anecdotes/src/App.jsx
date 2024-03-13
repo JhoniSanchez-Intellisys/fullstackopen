@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Notification } from "./components/Notification.jsx";
 import { getAll, create, update, del } from "../services/anecdotes.js";
 // import { useId } from 'react';
-import { nanoid } from 'nanoid';
+import { nanoid } from "nanoid";
 
 // import  anecdote from "./data.js";   sustituido por el Json Server
 
@@ -12,11 +12,16 @@ export default function App() {
   const [notif, setnotif] = useState(null);
   // const id = useId();
 
-
   const buscadata = async () => {
-    const datos = await getAll();
-    setdata(datos.data);
-    console.log(datos.data);
+    try {
+      const datos = await getAll();
+      setdata(datos.data);
+    } catch (error) {
+      console.log(error);
+      setnotif(error.message);
+    }
+
+    // console.log(datos.data);
   };
 
   useEffect(() => {
@@ -24,21 +29,23 @@ export default function App() {
   }, []);
 
   const votar = async (el, i) => {
-    console.log("Este es el Id", i)
-    const updatavotes = data.map((anecdote) => {
-      if (i === anecdote.id) {
-        return { ...anecdote, votes: anecdote.votes + 1 };
-      }
-      return anecdote;
-    });
+    try {
+      const updatavotes = data.map((anecdote) => {
+        if (i === anecdote.id) {
+          return { ...anecdote, votes: anecdote.votes + 1 };
+        }
+        return anecdote;
+      });
+      const uptadasort = updatavotes.sort((a, b) => b.votes - a.votes);
+      setdata(uptadasort);
 
-    console.log(updatavotes);
-    const uptadasort = updatavotes.sort((a, b) => b.votes - a.votes);
-    console.log(uptadasort);
-    setdata(uptadasort);
-    await update(i, {...el, votes: el.votes+1} )
-    console.log(el.anecdote);
-    setnotif(`You voted for: , ${el.anecdote}`);
+      const requ = await update(i, { ...el, votes: el.votes + 1 });
+      console.log(requ);
+      setnotif(`You voted for: , ${el.anecdote}`);
+    } catch (error) {
+      setnotif(error.message);
+      console.log(error.message);
+    }
   };
 
   const noti = () => {
@@ -47,20 +54,20 @@ export default function App() {
     }, 2000);
   };
   const add = async (e) => {
-        e.preventDefault();
-    let noteId = nanoid();
-    console.log(typeof noteId);
-    
-    const newAnecdote = { anecdote: input, votes: 0, id:noteId }
-
-    const addanecdote = [...data, newAnecdote];
-    setinput("");
-    setdata(addanecdote);
-
-    setnotif("New Anecdote Added");
-    await create(newAnecdote);
-console.log(data);
-
+    e.preventDefault();
+    try {
+      let noteId = nanoid();
+      const newAnecdote = { anecdote: input, votes: 0, id: noteId };
+      await create(newAnecdote);
+      const addanecdote = [...data, newAnecdote];
+      setinput("");
+      setdata(addanecdote);
+      setnotif("New Anecdote Added");
+    } catch (error) {
+      setnotif(error.message);
+      console.log(error.message);
+    }
+    console.log(data);
     noti();
   };
 
